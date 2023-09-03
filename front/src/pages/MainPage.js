@@ -18,7 +18,7 @@ function MainPage() {
   const [sourceTitle, setSourceTitle] = useState("");
 
   async function getNewsfromLLM() {
-    await fetch("http://127.0.0.1:8000/get-LLM-result", {
+    await fetch("http://143.198.209.197:8000/get-LLM-result", {
       method: "GET",
     })
       .then((response) => response.json())
@@ -43,9 +43,12 @@ function MainPage() {
 
   async function getSourceDocument(title) {
     setSourceTitle(title);
-    await fetch("http://127.0.0.1:8000/get-relevant-docs?keyword=" + title, {
-      method: "GET",
-    })
+    await fetch(
+      "http://143.198.209.197:8000/get-relevant-docs?keyword=" + title,
+      {
+        method: "GET",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -59,7 +62,7 @@ function MainPage() {
   }
 
   async function getPrediction() {
-    await fetch("http://127.0.0.1:8000/pharma-sales-prediction", {
+    await fetch("http://143.198.209.197:8000/pharma-sales-prediction", {
       method: "POST",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
