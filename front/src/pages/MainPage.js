@@ -19,6 +19,7 @@ function MainPage() {
 
   async function getNewsfromLLM() {
     await fetch("http://127.0.0.1:8000/get-LLM-result", {
+      mode: "cors",
       method: "GET",
     })
       .then((response) => response.json())
@@ -44,6 +45,7 @@ function MainPage() {
   async function getSourceDocument(title) {
     setSourceTitle(title);
     await fetch("http://127.0.0.1:8000/get-relevant-docs?keyword=" + title, {
+      mode: "cors",
       method: "GET",
     })
       .then((response) => response.json())
@@ -60,6 +62,7 @@ function MainPage() {
 
   async function getPrediction() {
     await fetch("http://127.0.0.1:8000/pharma-sales-prediction", {
+      mode: "cors",
       method: "POST",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
