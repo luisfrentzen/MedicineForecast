@@ -24,7 +24,7 @@ export default function NewsCard({ source, info, getSourceDocument }) {
         <Typography className="whitespace-pre-line mb-2" variant="body2">
           {info}
         </Typography>
-        <Typography className="whitespace-pre-line underline" variant="body2">
+        <Typography className="whitespace-pre-line" variant="body2">
           {source}
         </Typography>
       </CardContent>
