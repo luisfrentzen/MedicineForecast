@@ -14,30 +14,20 @@ const bull = (
   </Box>
 );
 
-export default function NewsCard({ title, info, getSourceDocument }) {
+export default function NewsCard({ source, info, getSourceDocument }) {
   return (
     <Card
       className="flex flex-col justify-between max-w-lg"
       sx={{ minWidth: 275, minHeight: 350 }}
     >
       <CardContent>
-        <Typography variant="h5" component="div">
-          {title}
-        </Typography>
-        <Typography className="whitespace-pre-line" variant="body2">
+        <Typography className="whitespace-pre-line mb-2" variant="body2">
           {info}
         </Typography>
+        <Typography className="whitespace-pre-line underline" variant="body2">
+          {source}
+        </Typography>
       </CardContent>
-      <CardActions>
-        {title != null && (
-          <Button
-            onClick={() => getSourceDocument(title.slice(3))}
-            size="small"
-          >
-            Learn More
-          </Button>
-        )}
-      </CardActions>
     </Card>
   );
 }

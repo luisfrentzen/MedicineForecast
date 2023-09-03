@@ -24,6 +24,7 @@ google-search-results = "^2.4.2"
 beautifulsoup4 = "^4.12.2"
 openai = "^0.28.0"
 aioboto3 = "^11.3.0"
+tiktoken = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.1"
