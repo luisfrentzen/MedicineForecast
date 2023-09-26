@@ -17,6 +17,7 @@ function MainPage() {
   const [sourceDocuments, setSourceDocuments] = useState([]);
   const [index, setIndex] = useState(0);
   const [sourceTitle, setSourceTitle] = useState("");
+  const [stock, setStock] = useState(0);
 
   let apiHost =
     config.env === "prod"
@@ -56,7 +57,6 @@ function MainPage() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         let sourceDocuments = data.source_documents;
         setSourceDocuments(sourceDocuments);
         // handleOpen()
@@ -147,6 +147,9 @@ function MainPage() {
                 type="number"
                 placeholder="0"
                 className="w-48 h-12 border-2 rounded-md px-4"
+                onChange={(e)=>{
+                  setStock(e.target.value)
+                }}
               ></input>
             </div>
           </div>
@@ -187,7 +190,25 @@ function MainPage() {
                   },
                 ]}
                 config={{ displayModeBar: false }}
-                layout={{ title: graphTitle }}
+                layout={{ 
+                  title: graphTitle,
+                  shapes:[
+                    {
+                      type: 'line',
+                      xref: 'paper',
+                      x0: 0,
+                      x1: 1,
+                      y0: stock,
+                      y1: stock,
+                      name: "Stock",
+                      line:{
+                          color: 'rgb(255, 0, 0)',
+                          width: 4,
+                          dash:'solid'
+                      }
+                    },
+                  ]
+                }}
               />
             )}
           </div>
