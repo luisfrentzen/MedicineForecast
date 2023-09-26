@@ -11,16 +11,20 @@ from helper.serp_helper import search_news
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",
-    "http://143.198.209.197:3000",
-    "http://127.0.0.1:3000",
+    "http://127.0.0.1",
+    "https://127.0.0.1",
+    "http://localhost",
+    "https://localhost",
+    "http://medifore.luisfrentzen.com",
+    "https://medifore.luisfrentzen.com"
 ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
 

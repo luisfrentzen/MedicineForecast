@@ -18,7 +18,7 @@ function MainPage() {
   const [sourceTitle, setSourceTitle] = useState("");
 
   async function getNewsfromLLM() {
-    await fetch("http://127.0.0.1:8000/get-LLM-result", {
+    await fetch("https://medifore.luisfrentzen.com:8000/get-LLM-result", {
       mode: "cors",
       method: "GET",
     })
@@ -44,7 +44,7 @@ function MainPage() {
 
   async function getSourceDocument(title) {
     setSourceTitle(title);
-    await fetch("http://127.0.0.1:8000/get-relevant-docs?keyword=" + title, {
+    await fetch("https://medifore.luisfrentzen.com:8000/get-relevant-docs?keyword=" + title, {
       mode: "cors",
       method: "GET",
     })
@@ -61,7 +61,7 @@ function MainPage() {
   }
 
   async function getPrediction() {
-    await fetch("http://127.0.0.1:8000/pharma-sales-prediction", {
+    await fetch("https://medifore.luisfrentzen.com:8000/pharma-sales-prediction", {
       mode: "cors",
       method: "POST",
       headers: {
