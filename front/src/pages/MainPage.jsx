@@ -1,70 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
-import ListView from "../components/ListView";
-import NewsCard from "../components/NewsCard";
-import InfoCard from "../components/InfoCard";
 import Typography from "@mui/material/Typography";
 import config from "../config";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import loading from "../assets/loading.gif";
+import LLMSection from "../components/LLMSection";
 
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
   const [graphTitle, setGraphTitle] = useState("Bioproduct Demand Forecast");
   const [drugTypeList, setDrugTypeList] = useState(["N/A"]);
-  const [news, setNews] = useState([]);
-  const [sourceDocuments, setSourceDocuments] = useState([]);
   const [index, setIndex] = useState(0);
-  const [sourceTitle, setSourceTitle] = useState("");
   const [stock, setStock] = useState(0);
 
   let apiHost =
     config.env === "prod"
       ? config.production.apiEndpoint
       : config.development.apiEndpoint;
-
-  async function getNewsfromLLM() {
-    await fetch(`${apiHost}/get-LLM-result`, {
-      mode: "cors",
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        let newNewsList = [];
-        let categories = data.answer.split("\n");
-        categories.forEach((category, index) => {
-          let [title, medicineList] = category.split(":");
-          newNewsList.push({
-            title: title,
-            medicineList: medicineList,
-          });
-        });
-        console.log(newNewsList);
-        setNews(newNewsList);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
-  async function getSourceDocument(title) {
-    setSourceTitle(title);
-    await fetch(`${apiHost}/get-relevant-docs?keyword=${title}`, {
-      mode: "cors",
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        let sourceDocuments = data.source_documents;
-        setSourceDocuments(sourceDocuments);
-        // handleOpen()
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
 
   async function getPrediction() {
     await fetch(`${apiHost}/pharma-sales-prediction`, {
@@ -107,7 +60,6 @@ function MainPage() {
       });
   }
   useEffect(() => {
-    getNewsfromLLM();
     getPrediction();
   }, []);
 
@@ -115,7 +67,22 @@ function MainPage() {
     setIndex(e.target.selectedIndex);
     // console.log();
   }
-
+  const lineProps = stock != 0 ? {shapes:[
+    {
+      type: 'line',
+      xref: 'paper',
+      x0: 0,
+      x1: 1,
+      y0: stock,
+      y1: stock,
+      name: "Stock",
+      line:{
+          color: 'rgb(255, 0, 0)',
+          width: 4,
+          dash:'solid'
+      }
+    },
+  ]} : null;
   return (
     <div className="flex flex-col">
       <Navbar></Navbar>
@@ -192,71 +159,13 @@ function MainPage() {
                 config={{ displayModeBar: false }}
                 layout={{ 
                   title: graphTitle,
-                  shapes:[
-                    {
-                      type: 'line',
-                      xref: 'paper',
-                      x0: 0,
-                      x1: 1,
-                      y0: stock,
-                      y1: stock,
-                      name: "Stock",
-                      line:{
-                          color: 'rgb(255, 0, 0)',
-                          width: 4,
-                          dash:'solid'
-                      }
-                    },
-                  ]
+                  ...lineProps
                 }}
               />
             )}
           </div>
         </div>
-        <div className="mt-8">
-          <Typography variant="h5" gutterBottom>
-            Drugs Predicted To Be On Demand
-          </Typography>
-          <div className="flex flex-wrap">
-            {news.map((info, index) => {
-              if (info.medicineList != undefined) {
-                return (
-                  <div className="mx-2 my-1">
-                    <NewsCard
-                      title={info.title}
-                      info={info.medicineList.split(",").join("\n")}
-                      key={index}
-                      getSourceDocument={getSourceDocument}
-                    />
-                  </div>
-                );
-              }
-            })}
-          </div>
-        </div>
-
-        <div className="my-8">
-          {sourceTitle && (
-            <Typography variant="h5" gutterBottom>
-              Supporting News of "{sourceTitle}"
-            </Typography>
-          )}
-          <div className="flex my-2 flex-wrap">
-            {sourceDocuments &&
-              sourceDocuments.map((info, index) => {
-                return (
-                  <div className="mx-2 my-1">
-                    <InfoCard
-                      className="max-w-xl"
-                      source={info.metadata.source}
-                      info={info.page_content}
-                      key={index}
-                    />
-                  </div>
-                );
-              })}
-          </div>
-        </div>
+        <LLMSection apiHost={apiHost}/>
       </div>
       <Footer></Footer>
     </div>
