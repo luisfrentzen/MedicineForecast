@@ -7,11 +7,12 @@ import Typography from "@mui/material/Typography";
 import config from "../config";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import loading from "../assets/loading.gif";
 
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
-  const [graphTitle, setGraphTitle] = useState("Medicine Demand Forecast");
-  const [drugTypeList, setDrugTypeList] = useState(["Getting Data"]);
+  const [graphTitle, setGraphTitle] = useState("Bioproduct Demand Forecast");
+  const [drugTypeList, setDrugTypeList] = useState(["N/A"]);
   const [news, setNews] = useState([]);
   const [sourceDocuments, setSourceDocuments] = useState([]);
   const [index, setIndex] = useState(0);
@@ -129,6 +130,7 @@ function MainPage() {
               <select
                 className="w-48 h-12 border-2 rounded-md px-4"
                 onChange={changeIndexGraph}
+                placeholder="None"
               >
                 {drugTypeList.map((drug, index) => {
                   return (
@@ -148,7 +150,13 @@ function MainPage() {
               ></input>
             </div>
           </div>
-          <div className="w-full flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
+          <div className="w-full h-[40rem] flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
+            {drugTypeList.length == 1 && (
+              <div className="w-full h-full flex justify-center items-center text-lg h-24 text-gray-400">
+                <img className="mr-2 w-8 opacity-50" src={loading}></img>
+                <div className="pb-[0.2rem]">Getting Data</div>
+              </div>
+            )}
             {graphData != null && (
               <Plot
                 className="my-2 mx-6 w-full"
@@ -159,7 +167,11 @@ function MainPage() {
                     type: "scatter",
                     name: "Current",
                     mode: "lines+markers",
-                    marker: { color: "#00a1ff" },
+                    marker: {
+                      color: "#00a1ff",
+                      symbol: "circle-dot",
+                      size: 12,
+                    },
                   },
                   {
                     x: graphData[index].prediction.x,
@@ -167,9 +179,14 @@ function MainPage() {
                     type: "scatter",
                     name: "Predicted",
                     mode: "lines+markers",
-                    marker: { color: "#38c18c" },
+                    marker: {
+                      color: "#38c18c",
+                      symbol: "circle-dot",
+                      size: 12,
+                    },
                   },
                 ]}
+                config={{ displayModeBar: false }}
                 layout={{ title: graphTitle }}
               />
             )}
