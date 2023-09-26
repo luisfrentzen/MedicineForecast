@@ -4,9 +4,8 @@ import ListView from "../components/ListView";
 import NewsCard from "../components/NewsCard";
 import InfoCard from "../components/InfoCard";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-// import Backdrop from '@mui/material/Backdrop';
+import config from "../config";
 
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
@@ -17,8 +16,13 @@ function MainPage() {
   const [index, setIndex] = useState(0);
   const [sourceTitle, setSourceTitle] = useState("");
 
+  let apiHost =
+    config.env === "prod"
+      ? config.production.apiEndpoint
+      : config.development.apiEndpoint;
+
   async function getNewsfromLLM() {
-    await fetch("https://medifore.luisfrentzen.com:8000/get-LLM-result", {
+    await fetch(`${apiHost}/get-LLM-result`, {
       mode: "cors",
       method: "GET",
     })
@@ -44,7 +48,7 @@ function MainPage() {
 
   async function getSourceDocument(title) {
     setSourceTitle(title);
-    await fetch("https://medifore.luisfrentzen.com:8000/get-relevant-docs?keyword=" + title, {
+    await fetch(`${apiHost}/get-relevant-docs?keyword=${title}`, {
       mode: "cors",
       method: "GET",
     })
@@ -61,7 +65,7 @@ function MainPage() {
   }
 
   async function getPrediction() {
-    await fetch("https://medifore.luisfrentzen.com:8000/pharma-sales-prediction", {
+    await fetch(`${apiHost}/pharma-sales-prediction`, {
       mode: "cors",
       method: "POST",
       headers: {

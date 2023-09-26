@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from sqlalchemy.orm import Session
 import dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,15 +8,6 @@ from helper.pharma_sales_prediction import pharma_sales_prediction
 from helper.serp_helper import search_news
 
 app = FastAPI()
-
-origins = [
-    "http://127.0.0.1",
-    "https://127.0.0.1",
-    "http://localhost",
-    "https://localhost",
-    "http://medifore.luisfrentzen.com",
-    "https://medifore.luisfrentzen.com"
-]
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,16 +21,6 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     dotenv.load_dotenv(verbose=True)
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.post("/")
-def post_root():
-    return {"Hello": "World"}
 
 
 @app.post("/question-answering")
@@ -63,6 +43,6 @@ def get_relevant_docs(keyword: str):
     return relevant_docs(keyword)
 
 
-@app.post("/search_result")
+@app.post("/search-result")
 def get_searches():
     return search_news()
