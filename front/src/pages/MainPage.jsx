@@ -4,8 +4,9 @@ import ListView from "../components/ListView";
 import NewsCard from "../components/NewsCard";
 import InfoCard from "../components/InfoCard";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import config from "../config";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
@@ -115,11 +116,7 @@ function MainPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center justify-center bg-white py-2">
-        <Typography variant="h5" gutterBottom>
-          Medifore
-        </Typography>
-      </div>
+      <Navbar></Navbar>
       <div className="px-12">
         <div className="">
           <Typography variant="h5" gutterBottom>
@@ -204,13 +201,7 @@ function MainPage() {
           </div>
         </div>
       </div>
-      <Box sx={{ bgcolor: "#cfe8fc", height: "5vh" }}>
-        <div className="flex justify-center">
-          <Typography variant="overline" gutterBottom>
-            &copy; 2023 Ping Pong Bing Bong
-          </Typography>
-        </div>
-      </Box>
+      <Footer></Footer>
     </div>
   );
 }
