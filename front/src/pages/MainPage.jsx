@@ -7,11 +7,12 @@ import Typography from "@mui/material/Typography";
 import config from "../config";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import loading from "../assets/loading.gif";
 
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
-  const [graphTitle, setGraphTitle] = useState("Medicine Demand Forecast");
-  const [drugTypeList, setDrugTypeList] = useState(["Getting Data"]);
+  const [graphTitle, setGraphTitle] = useState("Bioproduct Demand Forecast");
+  const [drugTypeList, setDrugTypeList] = useState(["N/A"]);
   const [news, setNews] = useState([]);
   const [sourceDocuments, setSourceDocuments] = useState([]);
   const [index, setIndex] = useState(0);
@@ -110,29 +111,55 @@ function MainPage() {
     getPrediction();
   }, []);
 
-  function changeIndexGraph(index) {
-    setIndex(index);
+  function changeIndexGraph(e) {
+    setIndex(e.target.selectedIndex);
+    // console.log();
   }
 
   return (
     <div className="flex flex-col">
       <Navbar></Navbar>
       <div className="px-12">
-        <div className="">
+        <div className="mt-8">
           <Typography variant="h5" gutterBottom>
-            Medicine Sales Overtime
+            Bioproduct Sales Forecast
           </Typography>
-          <div className="flex flex-row border-2 w-fit rounded-md overflow-hidden">
-            <div className="border-r-2 min-w-[18rem]">
-              <ListView
-                key={drugTypeList}
-                drugs={drugTypeList}
-                changeIndexGraph={changeIndexGraph}
-              />
+          <div className="flex w-full border-2 bg-gray-100 rounded-t-md px-4 py-4 gap-8">
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Medicine ATC</div>
+              <select
+                className="w-48 h-12 border-2 rounded-md px-4"
+                onChange={changeIndexGraph}
+                placeholder="None"
+              >
+                {drugTypeList.map((drug, index) => {
+                  return (
+                    <option key={index} value={drug}>
+                      {drug}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Flat Stock</div>
+              <input
+                type="number"
+                placeholder="0"
+                className="w-48 h-12 border-2 rounded-md px-4"
+              ></input>
+            </div>
+          </div>
+          <div className="w-full h-[40rem] flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
+            {drugTypeList.length == 1 && (
+              <div className="w-full h-full flex justify-center items-center text-lg h-24 text-gray-400">
+                <img className="mr-2 w-8 opacity-50" src={loading}></img>
+                <div className="pb-[0.2rem]">Getting Data</div>
+              </div>
+            )}
             {graphData != null && (
               <Plot
-                className="my-2 mx-6 min-w-[36rem]"
+                className="my-2 mx-6 w-full"
                 data={[
                   {
                     x: graphData[index].recent_data.x,
@@ -140,7 +167,11 @@ function MainPage() {
                     type: "scatter",
                     name: "Current",
                     mode: "lines+markers",
-                    marker: { color: "blue" },
+                    marker: {
+                      color: "#00a1ff",
+                      symbol: "circle-dot",
+                      size: 12,
+                    },
                   },
                   {
                     x: graphData[index].prediction.x,
@@ -148,10 +179,15 @@ function MainPage() {
                     type: "scatter",
                     name: "Predicted",
                     mode: "lines+markers",
-                    marker: { color: "red" },
+                    marker: {
+                      color: "#38c18c",
+                      symbol: "circle-dot",
+                      size: 12,
+                    },
                   },
                 ]}
-                layout={{ width: 1000, height: 700, title: graphTitle }}
+                config={{ displayModeBar: false }}
+                layout={{ title: graphTitle }}
               />
             )}
           </div>
