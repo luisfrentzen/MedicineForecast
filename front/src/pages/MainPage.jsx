@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import loading from "../assets/loading.gif";
 import LLMSection from "../components/LLMSection";
 
+var mainGraphData
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
   const [graphTitle, setGraphTitle] = useState("Bioproduct Demand Forecast");
@@ -19,8 +20,8 @@ function MainPage() {
       ? config.production.apiEndpoint
       : config.development.apiEndpoint;
 
-  async function getPrediction() {
-    await fetch(`${apiHost}/pharma-sales-prediction`, {
+  async function getPrediction(modelEndpoint) {
+    await fetch(modelEndpoint, {
       mode: "cors",
       method: "POST",
       headers: {
@@ -34,12 +35,12 @@ function MainPage() {
         let newGraphData = [];
         let newDrugList = [];
         data.forEach((medicineType) => {
-          let recentDataforPredX =
-            medicineType.recent_data.X[medicineType.recent_data.X.length - 1];
-          let recentDataforPredY =
-            medicineType.recent_data.Y[medicineType.recent_data.Y.length - 1];
-          medicineType.prediction.X.unshift(recentDataforPredX);
-          medicineType.prediction.Y.unshift(recentDataforPredY);
+          // let recentDataforPredX =
+          //   medicineType.recent_data.X[medicineType.recent_data.X.length - 1];
+          // let recentDataforPredY =
+          //   medicineType.recent_data.Y[medicineType.recent_data.Y.length - 1];
+          // medicineType.prediction.X.unshift(recentDataforPredX);
+          // medicineType.prediction.Y.unshift(recentDataforPredY);
           newGraphData.push({
             recent_data: {
               x: medicineType.recent_data.X,
@@ -49,9 +50,10 @@ function MainPage() {
               x: medicineType.prediction.X,
               y: medicineType.prediction.Y,
             },
-          });
+          }); 
           newDrugList.push(medicineType.name);
         });
+        mainGraphData = newGraphData;
         setGraphData(newGraphData);
         setDrugTypeList(newDrugList);
       })
@@ -60,13 +62,51 @@ function MainPage() {
       });
   }
   useEffect(() => {
-    getPrediction();
+    getPrediction(`${apiHost}/pharma-sales-prediction`);
   }, []);
 
   function changeIndexGraph(e) {
     setIndex(e.target.selectedIndex);
-    // console.log();
   }
+
+  function changeModel(e){
+    let opt = e.target.value
+    if (opt === 'PropetLSTM'){
+      getPrediction(`${apiHost}/pharma-sales-prediction`);
+    }
+    else if (opt === 'ARIMA'){
+      getPrediction(`${apiHost}/arima-pharma-sales-prediction`);
+    }
+  }
+  const aggregateArray = (arr, agg) => {
+    console.log(arr);
+    // return arr.reduce((acc, val) => {
+    //   let search = val.x.getMonth()
+    //   if (agg === 'monthly'){
+
+    //   }
+    //   const index = acc.findIndex(obj => obj.name === search);
+    //   if(index !== -1){
+    //     acc[index].amount += val.amount;
+    //   }else{
+    //     acc.push({
+    //         name: val.name,
+    //         amount: val.amount
+    //     });
+    //   };
+    //   return acc;
+    // }, []);
+  };
+  function changeUnitofTime(e){
+    let opt = e.target.value
+    if (opt === 'weekly'){
+      setGraphData(mainGraphData)
+    }
+    else if(opt === 'monthly'){
+      
+    } 
+  }
+
   const lineProps = stock != 0 ? {shapes:[
     {
       type: 'line',
@@ -118,6 +158,36 @@ function MainPage() {
                   setStock(e.target.value)
                 }}
               ></input>
+            </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Forecast Model</div>
+              <select
+                className="w-48 h-12 border-2 rounded-md px-4"
+                onChange={changeModel}
+                placeholder="None"
+              >
+                <option key='1' value='PropetLSTM'>
+                  Prophet LSTM Ensemble
+                </option>
+                <option key='2' value='ARIMA'>
+                  ARIMA
+                </option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Unit of Time</div>
+              <select
+                className="w-48 h-12 border-2 rounded-md px-4"
+                onChange={changeUnitofTime}
+                placeholder="None"
+              >
+                <option key='1' value='weekly'>
+                  Weekly
+                </option>
+                <option key='2' value='monthly'>
+                  Monthly
+                </option>
+              </select>
             </div>
           </div>
           <div className="w-full h-[40rem] flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
