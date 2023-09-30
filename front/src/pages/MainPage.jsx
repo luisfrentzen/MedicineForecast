@@ -30,8 +30,6 @@ function MainPage() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("a");
-        console.log(data);
         let newGraphData = [];
         let newDrugList = [];
         data.forEach((medicineType) => {
@@ -78,32 +76,62 @@ function MainPage() {
       getPrediction(`${apiHost}/arima-pharma-sales-prediction`);
     }
   }
-  const aggregateArray = (arr, agg) => {
-    console.log(arr);
-    // return arr.reduce((acc, val) => {
-    //   let search = val.x.getMonth()
-    //   if (agg === 'monthly'){
-
-    //   }
-    //   const index = acc.findIndex(obj => obj.name === search);
-    //   if(index !== -1){
-    //     acc[index].amount += val.amount;
-    //   }else{
-    //     acc.push({
-    //         name: val.name,
-    //         amount: val.amount
-    //     });
-    //   };
-    //   return acc;
-    // }, []);
+  const checkOccurrence = (array, search) => {
+    let counter = 0;
+    for (let i = 0; i <= array.x.length; i++) {
+      // console.log(new Date(Date.parse(array.x[i])).getMonth())
+        if (new Date(Date.parse(array.x[i])).getMonth() === search) {
+            counter++;
+        }
+    }
+    return counter
   };
+  const reducetoMonthUnit = (arr) =>{
+    let newArray = []
+    arr.x.forEach((val, idx)=>{
+      let search = new Date(Date.parse(val)).getMonth()
+      const index = newArray.findIndex(obj => obj.x === search);
+      if(index !== -1){
+        newArray[index].y += arr.y[idx];
+      }else{
+        newArray.push({
+            x: new Date(Date.parse(val)).getMonth(),
+            y: arr.y[idx]
+        });
+      };
+    })
+
+    const X = newArray.map(item => {
+      return item.x;
+    });
+    const Y = newArray.map(item => {
+      return item.y / checkOccurrence(arr, item.x)
+    });
+    return {
+      'x': X,
+      'y': Y
+    }
+  }
+
+  const aggregateArray = (arr, agg) => {
+    let newArray = []
+    arr.forEach((val) =>{
+      newArray.push({
+        'prediction': reducetoMonthUnit(val.prediction),
+        'recent_data': reducetoMonthUnit(val.recent_data)
+      })
+    })
+    return newArray
+  };
+
   function changeUnitofTime(e){
     let opt = e.target.value
     if (opt === 'weekly'){
       setGraphData(mainGraphData)
     }
     else if(opt === 'monthly'){
-      
+      let aggregatedArray = aggregateArray(mainGraphData, 'monthly')
+      setGraphData(aggregatedArray);
     } 
   }
 
