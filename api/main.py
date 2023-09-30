@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import schemas
 from helper.question_answering_agent import question_answering, get_result, relevant_docs
 from helper.pharma_sales_prediction import pharma_sales_prediction
+from helper.arima_pharma_sales_prediction import init_arima, get_arima_prediction
 from helper.serp_helper import search_news
 
 app = FastAPI()
@@ -21,27 +22,27 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     dotenv.load_dotenv(verbose=True)
-
+    init_arima()
 
 @app.post("/question-answering")
 def post_question_answering(q: schemas.Question):
     return question_answering(q.prompt)
 
-
 @app.post("/pharma-sales-prediction")
 def get_pharma_sales_prediction():
     return pharma_sales_prediction()
 
+@app.post("/arima-pharma-sales-prediction")
+def get_arima_pharma_sales_prediction():
+    return get_arima_prediction()
 
 @app.get("/get-LLM-result")
 def get_LLM_result():
     return get_result()
 
-
 @app.get("/get-relevant-docs")
 def get_relevant_docs(keyword: str):
     return relevant_docs(keyword)
-
 
 @app.post("/search-result")
 def get_searches():

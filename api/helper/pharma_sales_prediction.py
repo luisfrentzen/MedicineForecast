@@ -92,7 +92,7 @@ def pharma_sales_prediction():
         pp = []
         for i in range(len(p)):
             pp.append(float(p[i]))
-        pp = pp[-4:]
+        pp = pp[-8:]
 
         ppp.append(pp)
 
@@ -127,7 +127,7 @@ def pharma_sales_prediction():
         pp = []
         for i in range(len(p)):
             pp.append(float(p[i]))
-        pp = pp[-4:]
+        pp = pp[-8:]
         l = y_test.reshape(1, -1)[0]
         ll = []
         for i in range(len(l)):
@@ -140,7 +140,7 @@ def pharma_sales_prediction():
         for date in df['datum'].tail(40).values:
             date_ll.append(date)
 
-        date_pp = date_pp[-4:]
+        date_pp = date_pp[-8:]
         date_ll = date_ll[-8:-4]
 
         for i in range(len(pp)):
