@@ -84,7 +84,7 @@ function MainPage() {
   const checkOccurrence = (array, search) => {
     let counter = 0;
     for (let i = 0; i <= array.x.length; i++) {
-        if (new Date(Date.parse(array.x[i])).getMonth() === search) {
+        if (new Date(Date.parse(array.x[i])).getMonth() + 1 === search) {
             counter++;
         }
     }
@@ -93,13 +93,13 @@ function MainPage() {
   const reducetoMonthUnit = (arr) =>{
     let newArray = []
     arr.x.forEach((val, idx)=>{
-      let search = new Date(Date.parse(val)).getMonth()
+      let search = new Date(Date.parse(val)).getMonth() + 1
       const index = newArray.findIndex(obj => obj.x === search);
       if(index !== -1){
         newArray[index].y += arr.y[idx];
       }else{
         newArray.push({
-            x: new Date(Date.parse(val)).getMonth(),
+            x: search,
             y: arr.y[idx]
         });
       };
