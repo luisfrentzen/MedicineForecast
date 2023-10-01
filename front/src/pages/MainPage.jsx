@@ -14,6 +14,8 @@ function MainPage() {
   const [drugTypeList, setDrugTypeList] = useState(["N/A"]);
   const [index, setIndex] = useState(0);
   const [stock, setStock] = useState(0);
+  const [loadingState, setLoadingState] = useState(true);
+  const [selectedUnitOfTime, setSelectedUnitOfTime] = useState('weekly')
 
   let apiHost =
     config.env === "prod"
@@ -21,6 +23,7 @@ function MainPage() {
       : config.development.apiEndpoint;
 
   async function getPrediction(modelEndpoint) {
+    setLoadingState(true)
     await fetch(modelEndpoint, {
       mode: "cors",
       method: "POST",
@@ -54,6 +57,8 @@ function MainPage() {
         mainGraphData = newGraphData;
         setGraphData(newGraphData);
         setDrugTypeList(newDrugList);
+        setLoadingState(false);
+        setSelectedUnitOfTime('weekly');
       })
       .catch((err) => {
         console.log(err.message);
@@ -79,7 +84,6 @@ function MainPage() {
   const checkOccurrence = (array, search) => {
     let counter = 0;
     for (let i = 0; i <= array.x.length; i++) {
-      // console.log(new Date(Date.parse(array.x[i])).getMonth())
         if (new Date(Date.parse(array.x[i])).getMonth() === search) {
             counter++;
         }
@@ -115,22 +119,26 @@ function MainPage() {
 
   const aggregateArray = (arr, agg) => {
     let newArray = []
-    arr.forEach((val) =>{
-      newArray.push({
-        'prediction': reducetoMonthUnit(val.prediction),
-        'recent_data': reducetoMonthUnit(val.recent_data)
+    if(agg === 'monthly'){
+      arr.forEach((val) =>{
+        newArray.push({
+          'prediction': reducetoMonthUnit(val.prediction),
+          'recent_data': reducetoMonthUnit(val.recent_data)
+        })
       })
-    })
+    }
+    
     return newArray
   };
 
   function changeUnitofTime(e){
     let opt = e.target.value
+    setSelectedUnitOfTime(opt)
     if (opt === 'weekly'){
       setGraphData(mainGraphData)
     }
-    else if(opt === 'monthly'){
-      let aggregatedArray = aggregateArray(mainGraphData, 'monthly')
+    else{
+      let aggregatedArray = aggregateArray(mainGraphData, opt)
       setGraphData(aggregatedArray);
     } 
   }
@@ -208,6 +216,7 @@ function MainPage() {
                 className="w-48 h-12 border-2 rounded-md px-4"
                 onChange={changeUnitofTime}
                 placeholder="None"
+                value={selectedUnitOfTime}
               >
                 <option key='1' value='weekly'>
                   Weekly
@@ -219,13 +228,13 @@ function MainPage() {
             </div>
           </div>
           <div className="w-full h-[40rem] flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
-            {drugTypeList.length == 1 && (
+            {loadingState && (
               <div className="w-full h-full flex justify-center items-center text-lg h-24 text-gray-400">
                 <img className="mr-2 w-8 opacity-50" src={loading}></img>
                 <div className="pb-[0.2rem]">Getting Data</div>
               </div>
             )}
-            {graphData != null && (
+            {!loadingState && graphData != null && (
               <Plot
                 className="my-2 mx-6 w-full"
                 data={[
