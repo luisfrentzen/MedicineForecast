@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import loading from "../assets/loading.gif";
 import LLMSection from "../components/LLMSection";
 
-var mainGraphData
+var mainGraphData;
 function MainPage() {
   const [graphData, setGraphData] = useState(null);
   const [graphTitle, setGraphTitle] = useState("Bioproduct Demand Forecast");
@@ -15,7 +15,7 @@ function MainPage() {
   const [index, setIndex] = useState(0);
   const [stock, setStock] = useState(0);
   const [loadingState, setLoadingState] = useState(true);
-  const [selectedUnitOfTime, setSelectedUnitOfTime] = useState('weekly')
+  const [selectedUnitOfTime, setSelectedUnitOfTime] = useState("weekly");
 
   let apiHost =
     config.env === "prod"
@@ -23,7 +23,7 @@ function MainPage() {
       : config.development.apiEndpoint;
 
   async function getPrediction(modelEndpoint) {
-    setLoadingState(true)
+    setLoadingState(true);
     await fetch(modelEndpoint, {
       mode: "cors",
       method: "POST",
@@ -42,6 +42,7 @@ function MainPage() {
           //   medicineType.recent_data.Y[medicineType.recent_data.Y.length - 1];
           // medicineType.prediction.X.unshift(recentDataforPredX);
           // medicineType.prediction.Y.unshift(recentDataforPredY);
+
           newGraphData.push({
             recent_data: {
               x: medicineType.recent_data.X,
@@ -51,14 +52,17 @@ function MainPage() {
               x: medicineType.prediction.X,
               y: medicineType.prediction.Y,
             },
-          }); 
+          });
+
+          console.log(newGraphData);
+
           newDrugList.push(medicineType.name);
         });
         mainGraphData = newGraphData;
         setGraphData(newGraphData);
         setDrugTypeList(newDrugList);
         setLoadingState(false);
-        setSelectedUnitOfTime('weekly');
+        setSelectedUnitOfTime("weekly");
       })
       .catch((err) => {
         console.log(err.message);
@@ -72,93 +76,96 @@ function MainPage() {
     setIndex(e.target.selectedIndex);
   }
 
-  function changeModel(e){
-    let opt = e.target.value
-    if (opt === 'PropetLSTM'){
+  function changeModel(e) {
+    let opt = e.target.value;
+    if (opt === "PropetLSTM") {
       getPrediction(`${apiHost}/pharma-sales-prediction`);
-    }
-    else if (opt === 'ARIMA'){
+    } else if (opt === "ARIMA") {
       getPrediction(`${apiHost}/arima-pharma-sales-prediction`);
     }
   }
   const checkOccurrence = (array, search) => {
     let counter = 0;
     for (let i = 0; i <= array.x.length; i++) {
-        if (new Date(Date.parse(array.x[i])).getMonth() + 1 === search) {
-            counter++;
-        }
+      if (new Date(Date.parse(array.x[i])).getMonth() + 1 === search) {
+        counter++;
+      }
     }
-    return counter
+    return counter;
   };
-  const reducetoMonthUnit = (arr) =>{
-    let newArray = []
-    arr.x.forEach((val, idx)=>{
-      let search = new Date(Date.parse(val)).getMonth() + 1
-      const index = newArray.findIndex(obj => obj.x === search);
-      if(index !== -1){
+  const reducetoMonthUnit = (arr) => {
+    let newArray = [];
+    arr.x.forEach((val, idx) => {
+      let search = new Date(Date.parse(val)).getMonth() + 1;
+      const index = newArray.findIndex((obj) => obj.x === search);
+      if (index !== -1) {
         newArray[index].y += arr.y[idx];
-      }else{
+      } else {
         newArray.push({
-            x: search,
-            y: arr.y[idx]
+          x: search,
+          y: arr.y[idx],
         });
-      };
-    })
+      }
+    });
 
-    const X = newArray.map(item => {
+    const X = newArray.map((item) => {
       return item.x;
     });
-    const Y = newArray.map(item => {
-      return item.y / checkOccurrence(arr, item.x)
+    const Y = newArray.map((item) => {
+      return item.y / checkOccurrence(arr, item.x);
     });
     return {
-      'x': X,
-      'y': Y
-    }
-  }
-
-  const aggregateArray = (arr, agg) => {
-    let newArray = []
-    if(agg === 'monthly'){
-      arr.forEach((val) =>{
-        newArray.push({
-          'prediction': reducetoMonthUnit(val.prediction),
-          'recent_data': reducetoMonthUnit(val.recent_data)
-        })
-      })
-    }
-    
-    return newArray
+      x: X,
+      y: Y,
+    };
   };
 
-  function changeUnitofTime(e){
-    let opt = e.target.value
-    setSelectedUnitOfTime(opt)
-    if (opt === 'weekly'){
-      setGraphData(mainGraphData)
+  const aggregateArray = (arr, agg) => {
+    let newArray = [];
+    if (agg === "monthly") {
+      arr.forEach((val) => {
+        newArray.push({
+          prediction: reducetoMonthUnit(val.prediction),
+          recent_data: reducetoMonthUnit(val.recent_data),
+        });
+      });
     }
-    else{
-      let aggregatedArray = aggregateArray(mainGraphData, opt)
+
+    return newArray;
+  };
+
+  function changeUnitofTime(e) {
+    let opt = e.target.value;
+    setSelectedUnitOfTime(opt);
+    if (opt === "weekly") {
+      setGraphData(mainGraphData);
+    } else {
+      let aggregatedArray = aggregateArray(mainGraphData, opt);
       setGraphData(aggregatedArray);
-    } 
+    }
   }
 
-  const lineProps = stock != 0 ? {shapes:[
-    {
-      type: 'line',
-      xref: 'paper',
-      x0: 0,
-      x1: 1,
-      y0: stock,
-      y1: stock,
-      name: "Stock",
-      line:{
-          color: 'rgb(255, 0, 0)',
-          width: 4,
-          dash:'solid'
-      }
-    },
-  ]} : null;
+  const lineProps =
+    stock != 0
+      ? {
+          shapes: [
+            {
+              type: "line",
+              xref: "paper",
+              x0: 0.05,
+              x1: 0.95,
+              y0: stock,
+              y1: stock,
+              name: "Stock",
+              line: {
+                color: "#f24646",
+                width: 2,
+                dash: "solid",
+              },
+            },
+          ],
+        }
+      : null;
   return (
     <div className="flex flex-col">
       <Navbar></Navbar>
@@ -190,8 +197,8 @@ function MainPage() {
                 type="number"
                 placeholder="0"
                 className="w-48 h-12 border-2 rounded-md px-4"
-                onChange={(e)=>{
-                  setStock(e.target.value)
+                onChange={(e) => {
+                  setStock(e.target.value);
                 }}
               ></input>
             </div>
@@ -202,10 +209,10 @@ function MainPage() {
                 onChange={changeModel}
                 placeholder="None"
               >
-                <option key='1' value='PropetLSTM'>
+                <option key="1" value="PropetLSTM">
                   Prophet LSTM Ensemble
                 </option>
-                <option key='2' value='ARIMA'>
+                <option key="2" value="ARIMA">
                   ARIMA
                 </option>
               </select>
@@ -218,10 +225,10 @@ function MainPage() {
                 placeholder="None"
                 value={selectedUnitOfTime}
               >
-                <option key='1' value='weekly'>
+                <option key="1" value="weekly">
                   Weekly
                 </option>
-                <option key='2' value='monthly'>
+                <option key="2" value="monthly">
                   Monthly
                 </option>
               </select>
@@ -264,15 +271,15 @@ function MainPage() {
                   },
                 ]}
                 config={{ displayModeBar: false }}
-                layout={{ 
+                layout={{
                   title: graphTitle,
-                  ...lineProps
+                  ...lineProps,
                 }}
               />
             )}
           </div>
         </div>
-        <LLMSection apiHost={apiHost}/>
+        <LLMSection apiHost={apiHost} />
       </div>
       <Footer></Footer>
     </div>
