@@ -5,28 +5,18 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
-
 export default function NewsCard({ source, info, getSourceDocument }) {
   return (
-    <Card
-      className="flex flex-col justify-between max-w-lg"
-      sx={{ minWidth: 275, minHeight: 350 }}
-    >
+    <Card className="text-[#4a4a4a] text-sm leading-5 flex flex-col justify-between w-[40rem] h-full border-[1px]">
       <CardContent>
-        <Typography className="whitespace-pre-line mb-2" variant="body2">
+        <div className="whitespace-pre-line text-justify mb-8">
+          <div className="font-semibold">News body:</div>
           {info}
-        </Typography>
-        <Typography className="whitespace-pre-line" variant="body2">
-          {source}
-        </Typography>
+        </div>
+        <a className="" href={source}>
+          <div className="font-semibold">Sourced from: </div>
+          <u>{source}</u>
+        </a>
       </CardContent>
     </Card>
   );
