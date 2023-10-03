@@ -16,6 +16,8 @@ function MainPage() {
   const [stock, setStock] = useState(0);
   const [loadingState, setLoadingState] = useState(true);
   const [selectedUnitOfTime, setSelectedUnitOfTime] = useState("weekly");
+  const [flatError, setFlatError] = useState(0);
+  const [predictionError, setPredictionError] = useState(0);
 
   let apiHost =
     config.env === "prod"
@@ -53,9 +55,8 @@ function MainPage() {
               y: medicineType.prediction.Y,
             },
           });
-
-          console.log(newGraphData);
-
+          calculateFlatError()
+          calculatePredictionError()
           newDrugList.push(medicineType.name);
         });
         mainGraphData = newGraphData;
@@ -74,6 +75,26 @@ function MainPage() {
 
   function changeIndexGraph(e) {
     setIndex(e.target.selectedIndex);
+    calculateFlatError()
+    calculatePredictionError()
+  }
+
+  function calculateFlatError(){
+    if(stock > 0){
+      let errorToReturn = 0
+      for(let i = 0 ; i < graphData[index].prediction.y.length ; i++){
+        errorToReturn += stock - graphData[index].prediction.y[i]
+      }
+      setFlatError(errorToReturn/graphData[index].prediction.y.length)
+    }
+  }
+
+  function calculatePredictionError(){
+    let errorToReturn = 0
+    for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
+      errorToReturn += graphData[index].prediction.y[i] - graphData[index].recent_data.y[i]
+    }
+    setPredictionError(errorToReturn/graphData[index].recent_data.y.length)
   }
 
   function changeModel(e) {
@@ -199,6 +220,7 @@ function MainPage() {
                 className="w-48 h-12 border-2 rounded-md px-4"
                 onChange={(e) => {
                   setStock(e.target.value);
+                  calculateFlatError();
                 }}
               ></input>
             </div>
@@ -232,6 +254,18 @@ function MainPage() {
                   Monthly
                 </option>
               </select>
+            </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Flat Stock Error</div>
+              <div>
+                {flatError}
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Prediction Stock Error</div>
+              <div>
+                {predictionError}
+              </div>
             </div>
           </div>
           <div className="w-full h-[40rem] flex flex-row border-2 w-fit rounded-b-md border-t-0 overflow-hidden">
