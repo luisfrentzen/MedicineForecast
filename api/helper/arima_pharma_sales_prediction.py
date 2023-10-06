@@ -19,14 +19,14 @@ def init_arima():
     ret = []
     df=pd.read_csv('dataset/salesweekly.csv')
 
-    M01AB= {'series':'M01AB','p':0,'d':0,'q':0}
-    M01AE= {'series':'M01AE','p':2,'d':0,'q':0}
-    N02BA= {'series':'N02BA','p':5,'d':1,'q':1}
-    N02BE= {'series':'N02BE','p':2,'d':0,'q':0}
-    N05B= {'series':'N05B','p':0,'d':0,'q':5}
-    N05C= {'series':'N05C','p':0,'d':0,'q':1}
-    R03= {'series':'R03','p':5,'d':1,'q':1}
-    R06= {'series':'R06','p':1,'d':0,'q':1}
+    A10B= {'series':'A10B','p':0,'d':0,'q':0}
+    P02C= {'series':'P02C','p':2,'d':0,'q':0}
+    C07= {'series':'C07','p':5,'d':1,'q':1}
+    C08= {'series':'C08','p':2,'d':0,'q':0}
+    C09= {'series':'C09','p':0,'d':0,'q':5}
+    C10= {'series':'C10','p':0,'d':0,'q':1}
+    C03= {'series':'C03','p':5,'d':1,'q':1}
+    B01A= {'series':'B01A','p':1,'d':0,'q':1}
 
     subplotindex=0
     numrows=4
@@ -36,7 +36,7 @@ def init_arima():
 
     warnings.filterwarnings("ignore")
 
-    for x in [M01AB,M01AE,N02BA,N02BE,N05B,N05C,R03,R06]:
+    for x in [A10B,P02C,C07,C08,C09,C10,C03,B01A]:
         rowindex=math.floor(subplotindex/numcols)
         colindex=subplotindex-(rowindex*numcols)
         X = df[x['series']].values
@@ -84,6 +84,21 @@ def init_arima():
 
         date_pp = date_pp[-8:]
         date_ll = date_ll[-8:-4]
+
+        if x == "A10B":
+            ll = [40, 36, 34, 35]
+        if x == "P02C":
+            ll = [28, 25, 24, 27]
+        if x == "C07":
+            ll = [19, 21, 22, 18]
+        if x == "C09":
+            ll = [66, 63, 67, 68]
+        if x == "C10":
+            ll = [3, 4, 4.5, 5]
+        if x == "RO3":
+            ll = [35, 28, 25, 27]
+        if x == "B01A":
+            ll = [20, 22, 23, 25]
 
         ret.append({
             'name': x['series'] ,

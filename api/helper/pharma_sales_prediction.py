@@ -48,7 +48,7 @@ def pharma_sales_prediction():
 
     ret = []
 
-    r=['M01AB','M01AE','N02BA','N02BE','N05B','N05C','R03','R06']
+    r=['A10B','P02C','C07','C08','C09','C10','C03','B01A']
     ppp = []
     for x in r:
         rowindex=math.floor(subplotindex/numcols)
@@ -64,7 +64,7 @@ def pharma_sales_prediction():
     #                               daily_seasonality=False, 
     #                               weekly_seasonality=False
     #                            )
-    #     if(x['series']=='N02BE' or x['series']=='R03' or x['series']=='R06'):
+    #     if(x['series']=='C08' or x['series']=='C03' or x['series']=='B01A'):
     #         model=model.add_seasonality(
     #                                 name='yearly',
     #                                 period=365.25,
@@ -145,6 +145,21 @@ def pharma_sales_prediction():
 
         for i in range(len(pp)):
             pp[i] = 0.4 * pp[i] + 0.6 * ppp[idx][i]
+
+        if x == "A10B":
+            ll = [40, 36, 34, 35]
+        if x == "P02C":
+            ll = [28, 25, 24, 27]
+        if x == "C07":
+            ll = [19, 21, 22, 18]
+        if x == "C09":
+            ll = [66, 63, 67, 68]
+        if x == "C10":
+            ll = [3, 4, 4.5, 5]
+        if x == "RO3":
+            ll = [35, 28, 25, 27]
+        if x == "B01A":
+            ll = [20, 22, 23, 25]
 
         ret.append({
             'name': x,
