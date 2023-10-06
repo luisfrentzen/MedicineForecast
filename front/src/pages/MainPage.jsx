@@ -16,8 +16,6 @@ function MainPage() {
   const [stock, setStock] = useState(0);
   const [loadingState, setLoadingState] = useState(true);
   const [selectedUnitOfTime, setSelectedUnitOfTime] = useState("weekly");
-  const [flatError, setFlatError] = useState(0);
-  const [predictionError, setPredictionError] = useState(0);
 
   let apiHost =
     config.env === "prod"
@@ -62,8 +60,6 @@ function MainPage() {
         setDrugTypeList(newDrugList);
         setLoadingState(false);
         setSelectedUnitOfTime("weekly"); 
-        calculateFlatError()
-        calculatePredictionError()
       })
       .catch((err) => {
         console.log(err.message);
@@ -73,31 +69,88 @@ function MainPage() {
     getPrediction(`${apiHost}/pharma-sales-prediction`);
   }, []);
 
+  // useEffect(() => {
+  //   if(stock != 0){
+  //     calculateFlatPredictionError();
+  //     calculateFlatGroundError();
+  //   }
+  // }, [stock]);
+
   function changeIndexGraph(e) {
     setIndex(e.target.selectedIndex);
-    calculateFlatError()
-    calculatePredictionError()
   }
 
-  function calculateFlatError(){
-    if(stock > 0 && graphData){
-      let errorToReturn = 0
-      for(let i = 0 ; i < graphData[index].prediction.y.length ; i++){
-        errorToReturn += stock - graphData[index].prediction.y[i]
-      }
-      setFlatError(errorToReturn/graphData[index].prediction.y.length)
+  function calculateFlatPredictionError(){
+    let errorToReturn = 0
+    for(let i = 0 ; i < graphData[index].prediction.y.length ; i++){
+      errorToReturn += stock - graphData[index].prediction.y[i]
     }
+    return errorToReturn/graphData[index].prediction.y.length
+  }
+
+  function calculatePercentageFlatPredictionError(){
+    let sumFlat = stock * graphData[index].prediction.y.length;
+    let sumPrediction = graphData[index].prediction.y
+    .reduce((partialSum, a) => partialSum + a, 0);
+    return ((sumFlat - sumPrediction)/sumFlat) * 100
+  }
+
+  function showFlatPredictionErrorNPercentage(){
+    if(stock > 0 && graphData){
+      let error = calculateFlatPredictionError().toFixed(2)
+      let percentage = calculatePercentageFlatPredictionError().toFixed(2)
+      return error + ' | ' +percentage + '%'
+    }
+    else return 0
+  }
+
+  function calculateFlatGroundError(){
+    let errorToReturn = 0
+    for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
+      errorToReturn += stock - graphData[index].recent_data.y[i]
+    }
+    return errorToReturn/graphData[index].recent_data.y.length
+  }
+
+  function calculatePercentageFlatGroundError(){
+    let sumFlat = stock * graphData[index].recent_data.y.length;
+    let sumRecent = graphData[index].recent_data.y
+    .reduce((partialSum, a) => partialSum + a, 0);
+    return ((sumFlat - sumRecent)/sumFlat) * 100
+  }
+
+  function showFlatGroundErrorNPercentage(){
+    if(stock > 0 && graphData){
+      let error = calculateFlatGroundError().toFixed(2)
+      let percentage = calculatePercentageFlatGroundError().toFixed(2)
+      return error + ' | ' +percentage + '%'
+    }
+    else return 0
   }
 
   function calculatePredictionError(){
-    if(graphData){
-      let errorToReturn = 0
-      for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
-        errorToReturn += graphData[index].prediction.y[i] - graphData[index].recent_data.y[i]
-      }
-      setPredictionError(errorToReturn/graphData[index].recent_data.y.length)
+    let errorToReturn = 0
+    for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
+      errorToReturn += graphData[index].prediction.y[i] - graphData[index].recent_data.y[i]
     }
-    
+    return errorToReturn/graphData[index].recent_data.y.length
+  }
+
+  function calculatePercetagePredictionError(){
+    let sumRecent = graphData[index].recent_data.y.reduce((partialSum, a) => partialSum + a, 0);
+    let sumPrediction = graphData[index].prediction.y
+    .slice(0, graphData[index].recent_data.y.length)
+    .reduce((partialSum, a) => partialSum + a, 0);
+    return ((sumPrediction - sumRecent)/sumPrediction) * 100
+  }
+
+  function showPredictionErrorNPercentage(){
+    if(graphData){
+      let error = calculatePredictionError().toFixed(2)
+      let percentage = calculatePercetagePredictionError().toFixed(2)
+      return error + ' | ' +percentage + '%'
+    }
+    else return 0
   }
 
   function changeModel(e) {
@@ -223,7 +276,6 @@ function MainPage() {
                 className="w-48 h-12 border-2 rounded-md px-4"
                 onChange={(e) => {
                   setStock(e.target.value);
-                  calculateFlatError();
                 }}
               ></input>
             </div>
@@ -259,15 +311,21 @@ function MainPage() {
               </select>
             </div>
             <div className="flex flex-col">
-              <div className="mb-2 text-gray-600 text-sm">Flat Stock Error</div>
+              <div className="mb-2 text-gray-600 text-sm">Flat Prediction Error</div>
               <div>
-                {flatError}
+                {showFlatPredictionErrorNPercentage()}
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className="mb-2 text-gray-600 text-sm">Flat Ground Error</div>
+              <div>
+                {showFlatGroundErrorNPercentage()}
               </div>
             </div>
             <div className="flex flex-col">
               <div className="mb-2 text-gray-600 text-sm">Prediction Stock Error</div>
               <div>
-                {predictionError}
+                {showPredictionErrorNPercentage()}
               </div>
             </div>
           </div>
