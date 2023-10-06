@@ -1,5 +1,5 @@
 const config = {
-  env: "dev",
+  env: "prod",
   development: {
     apiEndpoint: "http://localhost:8000",
   },
