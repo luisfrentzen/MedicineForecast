@@ -49,6 +49,7 @@ def pharma_sales_prediction():
     ret = []
 
     r=['A10B','P02C','C07','C08','C09','C10','C03','B01A']
+    reverse_r = {}
     ppp = []
     for x in r:
         rowindex=math.floor(subplotindex/numcols)
