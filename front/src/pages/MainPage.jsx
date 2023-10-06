@@ -311,19 +311,19 @@ function MainPage() {
               </select>
             </div>
             <div className="flex flex-col">
-              <div className="mb-2 text-gray-600 text-sm">Flat Prediction Error</div>
+              <div className="mb-2 text-gray-600 text-sm">Prediction SAVING over Flat</div>
               <div>
                 {showFlatPredictionErrorNPercentage()}
               </div>
             </div>
             <div className="flex flex-col">
-              <div className="mb-2 text-gray-600 text-sm">Flat Ground Error</div>
+              <div className="mb-2 text-gray-600 text-sm">Flat to Ground Truth ERROR</div>
               <div>
                 {showFlatGroundErrorNPercentage()}
               </div>
             </div>
             <div className="flex flex-col">
-              <div className="mb-2 text-gray-600 text-sm">Prediction Stock Error</div>
+              <div className="mb-2 text-gray-600 text-sm">Prediction to Ground Truth ERROR</div>
               <div>
                 {showPredictionErrorNPercentage()}
               </div>
