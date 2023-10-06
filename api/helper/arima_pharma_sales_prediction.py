@@ -85,23 +85,23 @@ def init_arima():
         date_pp = date_pp[-8:]
         date_ll = date_ll[-8:-4]
 
-        if x == "A10B":
+        if x['series'] == "A10B":
             ll = [40, 36, 34, 35]
-        if x == "P02C":
+        if x['series'] == "P02C":
             ll = [28, 25, 24, 27]
-        if x == "C07":
+        if x['series'] == "C07":
             ll = [19, 21, 22, 18]
-        if x == "C09":
+        if x['series'] == "C09":
             ll = [66, 63, 67, 68]
-        if x == "C10":
+        if x['series'] == "C10":
             ll = [3, 4, 4.5, 5]
-        if x == "RO3":
+        if x['series'] == "RO3":
             ll = [35, 28, 25, 27]
-        if x == "B01A":
+        if x['series'] == "B01A":
             ll = [20, 22, 23, 25]
 
         ret.append({
-            'name': x['series'] ,
+            'name': x['series'],
             'config': [value for key, value in x.items() if key not in ['series']],
             'prediction': {
                 'X': date_pp,
