@@ -101,7 +101,8 @@ def init_arima():
             ll = [20, 22, 23, 25]
 
         ret.append({
-            'name': x,
+            'name': x['series'] ,
+            'config': [value for key, value in x.items() if key not in ['series']],
             'prediction': {
                 'X': date_pp,
                 'Y': pp
