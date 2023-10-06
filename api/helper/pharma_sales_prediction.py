@@ -154,7 +154,7 @@ def pharma_sales_prediction():
         if x == "C07":
             ll = [19, 21, 22, 18]
         if x == "C09":
-            ll = [66, 63, 67, 68]
+            ll = [66, 68.5, 69, 67]
         if x == "C10":
             ll = [3, 4, 4.5, 5]
         if x == "RO3":
