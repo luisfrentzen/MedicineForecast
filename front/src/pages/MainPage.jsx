@@ -56,7 +56,7 @@ function MainPage() {
             },
           });
           calculateFlatError()
-          // calculatePredictionError()
+          calculatePredictionError()
           newDrugList.push(medicineType.name);
         });
         mainGraphData = newGraphData;
@@ -76,7 +76,7 @@ function MainPage() {
   function changeIndexGraph(e) {
     setIndex(e.target.selectedIndex);
     calculateFlatError()
-    // calculatePredictionError()
+    calculatePredictionError()
   }
 
   function calculateFlatError(){
