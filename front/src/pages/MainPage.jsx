@@ -55,15 +55,15 @@ function MainPage() {
               y: medicineType.prediction.Y,
             },
           });
-          calculateFlatError()
-          calculatePredictionError()
           newDrugList.push(medicineType.name);
         });
         mainGraphData = newGraphData;
         setGraphData(newGraphData);
         setDrugTypeList(newDrugList);
         setLoadingState(false);
-        setSelectedUnitOfTime("weekly");
+        setSelectedUnitOfTime("weekly"); 
+        calculateFlatError()
+        calculatePredictionError()
       })
       .catch((err) => {
         console.log(err.message);
@@ -80,7 +80,7 @@ function MainPage() {
   }
 
   function calculateFlatError(){
-    if(stock > 0){
+    if(stock > 0 && graphData){
       let errorToReturn = 0
       for(let i = 0 ; i < graphData[index].prediction.y.length ; i++){
         errorToReturn += stock - graphData[index].prediction.y[i]
@@ -90,11 +90,14 @@ function MainPage() {
   }
 
   function calculatePredictionError(){
-    let errorToReturn = 0
-    for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
-      errorToReturn += graphData[index].prediction.y[i] - graphData[index].recent_data.y[i]
+    if(graphData){
+      let errorToReturn = 0
+      for(let i = 0 ; i < graphData[index].recent_data.y.length ; i++){
+        errorToReturn += graphData[index].prediction.y[i] - graphData[index].recent_data.y[i]
+      }
+      setPredictionError(errorToReturn/graphData[index].recent_data.y.length)
     }
-    setPredictionError(errorToReturn/graphData[index].recent_data.y.length)
+    
   }
 
   function changeModel(e) {
